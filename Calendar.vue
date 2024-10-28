@@ -1,11 +1,10 @@
 <template>
   <div class="container vue-calendar">
-    <div class="row">
-      <div class="col">
+      <div class="d-flex justify-content-between flex-wrap">
         <!-- Calendar Header -->
         <div
           v-if="currentView === 'month'"
-          class="btn-group btn-group mb-3"
+          class="btn-group mb-3"
           role="group"
           aria-label="..."
         >
@@ -15,8 +14,13 @@
           </button>
           <button class="btn btn-primary" @click="nextMonth">&gt;</button>
         </div>
+        <!-- Week navigation buttons -->
+        <div v-if="currentView === 'week'" class="btn-group mb-3">
+          <button class="btn btn-primary" @click="prevWeek">&lt;</button>
+          <button class="btn btn-primary" @click="nextWeek">&gt;</button>
+        </div>
         <div
-          class="float-end btn-group btn-group mb-3"
+          class="btn-group mb-3"
           role="group"
           aria-label="..."
         >
@@ -52,13 +56,7 @@
             Day
           </button>
         </div>
-        <!-- Week navigation buttons -->
-        <div v-if="currentView === 'week'" class="btn-group">
-          <button class="btn btn-primary" @click="prevWeek">&lt;</button>
-          <button class="btn btn-primary" @click="nextWeek">&gt;</button>
-        </div>
       </div>
-    </div>
 
     <!-- Month view -->
     <div v-if="currentView === 'month'">
@@ -214,7 +212,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, defineProps } from "vue";
 
 const props = defineProps({
   events: {
