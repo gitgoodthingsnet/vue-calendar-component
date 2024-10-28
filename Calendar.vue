@@ -9,11 +9,11 @@
           role="group"
           aria-label="..."
         >
-          <button class="btn btn-primary" @click="prevMonth"><</button>
+          <button class="btn btn-primary" @click="prevMonth">&lt;</button>
           <button class="btn btn-outline-primary">
             {{ monthName }} {{ currentYear }}
           </button>
-          <button class="btn btn-primary" @click="nextMonth">></button>
+          <button class="btn btn-primary" @click="nextMonth">&gt;</button>
         </div>
         <div
           class="float-end btn-group btn-group mb-3"
@@ -54,8 +54,8 @@
         </div>
         <!-- Week navigation buttons -->
         <div v-if="currentView === 'week'" class="btn-group">
-          <button class="btn btn-primary" @click="prevWeek"><</button>
-          <button class="btn btn-primary" @click="nextWeek">></button>
+          <button class="btn btn-primary" @click="prevWeek">&lt;</button>
+          <button class="btn btn-primary" @click="nextWeek">&gt;</button>
         </div>
       </div>
     </div>
