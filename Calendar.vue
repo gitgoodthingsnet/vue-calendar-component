@@ -1,62 +1,45 @@
 <template>
   <div class="container vue-calendar">
-      <div class="d-flex justify-content-between flex-wrap">
-        <!-- Calendar Header -->
-        <div
-          v-if="currentView === 'month'"
-          class="btn-group mb-3"
-          role="group"
-          aria-label="..."
-        >
-          <button class="btn btn-primary" @click="prevMonth">&lt;</button>
-          <button class="btn btn-outline-primary">
-            {{ monthName }} {{ currentYear }}
-          </button>
-          <button class="btn btn-primary" @click="nextMonth">&gt;</button>
-        </div>
-        <!-- Week navigation buttons -->
-        <div v-if="currentView === 'week'" class="btn-group mb-3">
-          <button class="btn btn-primary" @click="prevWeek">&lt;</button>
-          <button class="btn btn-primary" @click="nextWeek">&gt;</button>
-        </div>
-        <div
-          class="btn-group mb-3"
-          role="group"
-          aria-label="..."
-        >
-          <button
-            class="btn"
-            :class="
-              currentView === 'month' ? 'btn-primary' : 'btn-outline-primary'
-            "
-            @click="switchView('month')"
-          >
-            Month
-          </button>
-
-          <!-- Button to switch to week view -->
-          <button
-            class="btn"
-            :class="
-              currentView === 'week' ? 'btn-primary' : 'btn-outline-primary'
-            "
-            @click="switchView('week')"
-          >
-            Week
-          </button>
-
-          <!-- Button to switch to day view -->
-          <button
-            class="btn"
-            :class="
-              currentView === 'day' ? 'btn-primary' : 'btn-outline-primary'
-            "
-            @click="switchView('day')"
-          >
-            Day
-          </button>
-        </div>
+    <div class="d-flex justify-content-between flex-wrap">
+      <!-- Calendar Header -->
+      <div v-if="currentView === 'month'" class="btn-group mb-3" role="group" aria-label="...">
+        <button class="btn btn-primary" @click="prevMonth">&lt;</button>
+        <button class="btn btn-outline-primary">
+          {{ monthName }} {{ currentYear }}
+        </button>
+        <button class="btn btn-primary" @click="nextMonth">&gt;</button>
       </div>
+      <!-- Week navigation buttons -->
+      <div v-if="currentView === 'week'" class="btn-group mb-3">
+        <button class="btn btn-primary" @click="prevWeek">&lt;</button>
+        <button class="btn btn-primary" @click="nextWeek">&gt;</button>
+      </div>
+      <div v-if="currentView === 'day'" class="btn-group mb-3">
+        <button class="btn btn-primary" @click="prevDay">&lt;</button>
+        <button class="btn btn-outline-primary">
+          {{ formatDate(selectedDay.date) }}
+        </button>
+        <button class="btn btn-primary" @click="nextDay">&gt;</button>
+      </div>
+      <div class="btn-group mb-3" role="group" aria-label="...">
+        <button class="btn" :class="currentView === 'month' ? 'btn-primary' : 'btn-outline-primary'
+          " @click="switchView('month')">
+          Month
+        </button>
+
+        <!-- Button to switch to week view -->
+        <button class="btn" :class="currentView === 'week' ? 'btn-primary' : 'btn-outline-primary'
+          " @click="switchView('week')">
+          Week
+        </button>
+
+        <!-- Button to switch to day view -->
+        <button class="btn" :class="currentView === 'day' ? 'btn-primary' : 'btn-outline-primary'
+          " @click="switchView('day')">
+          Day
+        </button>
+      </div>
+    </div>
 
     <!-- Month view -->
     <div v-if="currentView === 'month'">
@@ -69,33 +52,19 @@
       <!-- Days in the Month (7 days per row) -->
       <div class="row">
         <div v-for="(week, index) in weeksInMonth" :key="index" class="d-flex">
-          <div
-            class="col border p-2 d-flex flex-column justify-content-between day-cell"
-            v-for="day in week"
-            :key="day.date"
-            :class="{ 'bg-white': true, 'text-muted': !day.isCurrentMonth }"
-          >
+          <div class="col border p-2 d-flex flex-column justify-content-between day-cell" v-for="day in week"
+            :key="day.date" :class="{ 'bg-white': true, 'text-muted': !day.isCurrentMonth }">
             <!-- Day number -->
             <div>
               <span>{{ day.date.getDate() }}</span>
             </div>
             <!-- Events for the day -->
             <div v-if="day.events.length" class="mt-2">
-              <div
-                v-for="(event, index) in sortEventsByStartTime(day.events)"
-                :key="index"
-                :class="getEventClass(day.date, event)"
-                class="event-badge badge bg-primary mb-1"
-                @click="onEventClick(event.id)"
-              >
-                <div
-                  v-if="!event.allday && event.start"
-                  class="event-badge-dot"
-                ></div>
-                <div
-                  v-if="!event.allday && event.start"
-                  class="event-badge-time"
-                >
+              <div v-for="(event, index) in sortEventsByStartTime(day.events)" :key="index"
+                :class="getEventClass(day.date, event)" class="event-badge badge bg-primary mb-1"
+                @click="onEventClick(event.id)">
+                <div v-if="!event.allday && event.start" class="event-badge-dot"></div>
+                <div v-if="!event.allday && event.start" class="event-badge-time">
                   {{ new Date(event.start).getHours() }}:{{
                     new Date(event.start)
                       .getMinutes()
@@ -123,20 +92,10 @@
       </div>
       <div class="row text-center font-weight-bold">
         <div class="col-1 border-bottom">All Day</div>
-        <div
-          v-for="day in currentWeek"
-          :key="day.date"
-          class="col p-0 border-start allday border-bottom"
-        >
+        <div v-for="day in currentWeek" :key="day.date" class="col p-0 border-start allday border-bottom">
           <!-- Render events this day -->
-          <div
-            v-for="(event, index) in getEventsInHour(day, null, true)"
-            :key="index"
-          >
-            <div
-              class="event-badge-allday ms-0 badge bg-primary"
-              @click="onEventClick(event.id)"
-            >
+          <div v-for="(event, index) in getEventsInHour(day, null, true)" :key="index">
+            <div class="event-badge-allday ms-0 badge bg-primary" @click="onEventClick(event.id)">
               {{ event.name }}
             </div>
           </div>
@@ -153,37 +112,23 @@
         </div>
 
         <!-- Days (Sunday to Saturday) in columns with hourly events -->
-        <div
-          v-for="day in currentWeek"
-          :key="day.date"
-          class="col p-0 border-start"
-        >
+        <div v-for="day in currentWeek" :key="day.date" class="col p-0 border-start">
           <div v-for="hour in hours" :key="hour" class="hour-slot">
             <!-- Render events for this hour -->
-            <div
-              v-for="(event, index) in getEventsInHour(day, hour, false)"
-              :key="index"
-            >
-              <template
-                v-if="
-                  event &&
-                  event.start &&
-                  !isNaN(new Date(event.start).getTime()) &&
-                  new Date(event.start).getHours() === hour
-                "
-              >
+            <div v-for="(event, index) in getEventsInHour(day, hour, false)" :key="index">
+              <template v-if="
+                event &&
+                event.start &&
+                !isNaN(new Date(event.start).getTime()) &&
+                new Date(event.start).getHours() === hour
+              ">
                 <!-- Calculate overlapping events and their positions -->
-                <div
-                  :style="
-                    getEventStyle(
-                      event,
-                      getOverlappingEvents(day, event).length,
-                      getOverlappingEvents(day, event).indexOf(event)
-                    )
-                  "
-                  class="event-badge-day badge bg-primary pointer"
-                  @click="onEventClick(event.id)"
-                >
+                <div :style="getEventStyle(
+                  event,
+                  getOverlappingEvents(day, event).length,
+                  getOverlappingEvents(day, event).indexOf(event)
+                )
+                  " class="event-badge-day badge bg-primary pointer" @click="onEventClick(event.id)">
                   <div class="text-start event-badge-title">
                     {{ event.name }}
                   </div>
@@ -208,6 +153,51 @@
         </div>
       </div>
     </div>
+
+    <!-- Day view --->
+    <div v-else-if="currentView === 'day'" class="day-view d-flex justify-content-center">
+      <!--Don't go too wide-->
+      <div class="hours-view w-100" style="max-width: 600px;">
+        <div class="row text-center font-weight-bold mb-2">
+          <div class="col-1"></div>
+          <div class="col">{{ formatDate(selectedDay.date) }}</div>
+        </div>
+        <div class="row text-center font-weight-bold">
+          <div class="col-1 border-bottom">All Day</div>
+          <!-- Render events this day -->
+          <div class="col" v-for="(event, index) in getEventsInHour(selectedDay, null, true)" :key="index">
+            <div class="event-badge-allday ms-0 badge bg-primary" @click="onEventClick(event.id)">
+              {{ event.name }}
+            </div>
+          </div>
+
+        </div>
+        <div class="row border-top">
+          <div class="col-1 p-0">
+            <div v-for="hour in hours" :key="hour" class="hour-slot">{{ hour }}:00</div>
+          </div>
+          <div class="col p-0 border-start">
+            <div v-for="hour in hours" :key="hour" class="hour-slot position-relative">
+              <div v-for="(event, index) in getEventsOfDayInHour(selectedDay, hour, false)" :key="index"
+                class="event-badge-day badge bg-primary pointer" @click="onEventClick(event.id)"
+                :style="getEventStyle(
+                  event,
+                  getOverlappingEvents(selectedDay, event).length,
+                  getOverlappingEvents(selectedDay, event).indexOf(event)
+                )">
+                <div class="event-badge-title">{{ event.name }}</div>
+                <div class="mt-2">{{ new Date(event.start).getHours() }}:{{ new
+                  Date(event.start).getMinutes().toString().padStart(2, "0") }} - {{ new Date(event.end).getHours()
+                  }}:{{
+                    new
+                      Date(event.end).getMinutes().toString().padStart(2, "0") }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -221,14 +211,16 @@ const props = defineProps({
   },
   eventClick: {
     type: Function,
-    default: () => {},
+    default: () => { },
   },
 });
 
+const selectedDay = ref(new Date());
 const currentView = ref("month");
 const currentWeekIndex = ref(0);
 const currentMonth = ref(new Date().getMonth());
 const currentYear = ref(new Date().getFullYear());
+
 const daysOfWeek = computed(() => [
   "Sun",
   "Mon",
@@ -261,7 +253,7 @@ const getEventStyle = (
   }
 
   // Define the visible hours range (e.g., from 08:00 to 18:00)
-  const visibleStartHour = 0;
+  const visibleStartHour = 8; 0
   const visibleEndHour = 24;
 
   // Calculate start and end hours
@@ -304,7 +296,6 @@ const getOverlappingEvents = (day, event) => {
     const eventStart = new Date(event.start).getTime();
     const eventEnd = new Date(event.end).getTime();
 
-    // Check if the events overlap
     return eventStart < otherEnd && otherStart < eventEnd;
   });
 
@@ -322,6 +313,7 @@ const monthName = computed(() => {
   );
 });
 
+const formatDate = (date) => date.toLocaleDateString("default", { weekday: "long", month: "short", day: "numeric", year: "numeric" });
 // Helper function to strip time from date and compare only by year, month, and day
 const isSameDay = (date1, date2) => {
   return (
@@ -425,6 +417,23 @@ const nextWeek = () => {
   }
 };
 
+const prevDay = () => {
+  selectedDay.value.date = new Date(selectedDay.value.date.setDate(selectedDay.value.date.getDate() - 1));
+  updateSelectedDayEvents();
+};
+
+const nextDay = () => {
+  selectedDay.value.date = new Date(selectedDay.value.date.setDate(selectedDay.value.date.getDate() + 1));
+  updateSelectedDayEvents();
+};
+const updateSelectedDayEvents = () => {
+  selectedDay.value.events = props.events.filter((event) => {
+    const eventStart = new Date(event.start);
+    const eventEnd = new Date(event.end);
+    return isSameDay(selectedDay.value.date, eventStart) || 
+           (eventStart <= selectedDay.value.date && selectedDay.value.date <= eventEnd);
+  });
+};
 // Array of hours (00:00 to 23:00)
 const hours = Array.from({ length: 24 }, (_, i) => i);
 
@@ -453,7 +462,15 @@ const getEventsInHour = (day, hour, getalldayevent) => {
     return false;
   });
 };
-
+const getEventsOfDayInHour = (day, hour) => {
+  return day.events.filter((event) => {
+    if (event.allday) {
+      return;
+    }
+    const eventStart = new Date(event.start);
+    return eventStart.getHours() === hour; // Only include events that start in the given hour
+  });
+};
 // Function to get the class for the event based on its position
 const getEventClass = (dayDate, event) => {
   let _class = "";
@@ -512,13 +529,32 @@ const getCurrentWeekIndex = () => {
 
 const switchView = (view) => {
   currentView.value = view;
-
   if (view === "week") {
-    currentWeekIndex.value = getCurrentWeekIndex(); // Set to the current week
+    currentWeekIndex.value = getCurrentWeekIndex();
+  } else if (view === "day") {
+    setEventsForDay(new Date());
   } else {
-    currentWeekIndex.value = 0; // Reset week index when switching to month view
+    currentWeekIndex.value = 0;
   }
 };
+
+const setEventsForDay = (date) => {
+  const dayEvents = props.events.filter((event) => {
+    const eventStart = new Date(event.start);
+    const eventEnd = new Date(event.end);
+    return isSameDay(date, eventStart) || (eventStart <= date && date <= eventEnd);
+  });
+  selectedDay.value = { date, events: dayEvents };
+};
+
+const getDayEvents = (date) => {
+  return props.events.filter(event => {
+    const start = new Date(event.start);
+    const end = new Date(event.end);
+    return isSameDay(date, start) || (start <= date && date <= end);
+  });
+};
+
 </script>
 
 <style scoped>
@@ -648,5 +684,9 @@ const switchView = (view) => {
 .vue-calendar .event-badge-title {
   white-space: nowrap;
   overflow: hidden;
+}
+
+.hours-view {
+  max-width: 666px;
 }
 </style>
